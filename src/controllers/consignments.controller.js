@@ -1,4 +1,5 @@
 import * as ConsignmentsRepo from '../repositories/consignments.repository.js';
+import { getConsignmentStatus } from '../../utils/consignmentStatus.js';
 
 export async function listConsignments(req, res) {
   try {
@@ -7,7 +8,12 @@ export async function listConsignments(req, res) {
 
     const consignments = await ConsignmentsRepo.findAllByUser(userId);
 
-    res.json(consignments);
+    const enriched = consignments.map(c => ({
+      ...c,
+      status: getConsignmentStatus(c.days_without_check),
+    }));
+
+    res.json(enriched);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao listar consignações' });
