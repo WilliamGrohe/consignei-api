@@ -49,3 +49,34 @@ export async function findOverdueByUser(userId, days = 180) {
   const { rows } = await query(sql, [userId, days]);
   return rows;
 }
+
+/**
+ * Atualiza a data de conferência da consignação
+ */
+export async function updateLastCheck({
+  consignmentId,
+  userId,
+  date,
+  notes,
+}) {
+  const sql = `
+    UPDATE consignments
+    SET
+      last_check = $1,
+      notes = COALESCE($2, notes)
+    WHERE id = $3
+      AND user_id = $4
+      AND active = true
+    RETURNING *
+  `;
+
+  const values = [
+    date || new Date(),
+    notes || null,
+    consignmentId,
+    userId,
+  ];
+
+  const { rows } = await query(sql, values);
+  return rows[0];
+}

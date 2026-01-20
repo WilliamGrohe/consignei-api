@@ -36,4 +36,36 @@ export async function listOverdueConsignments(req, res) {
   }
 }
 
+// CONTROLLER PARA ATUALIZAR A DATA DE CONFERÊNCIA DA CONSIGNAÇÃO
+export async function updateConsignmentLastCheck(req, res) {
+  try {
+    const userId = '11111111-1111-1111-1111-111111111111';
+
+    const { id } = req.params;
+    const { date, notes } = req.body;
+
+    const updated =
+      await ConsignmentsRepo.updateLastCheck({
+        consignmentId: id,
+        userId,
+        date,
+        notes,
+      });
+
+    if (!updated) {
+      return res.status(404).json({
+        error: 'Consignação não encontrada ou inativa',
+      });
+    }
+
+    res.json(updated);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: 'Erro ao atualizar conferência',
+    });
+  }
+}
+
+
 // passo 2 - Depois isso vira JWT
