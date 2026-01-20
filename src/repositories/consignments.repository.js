@@ -87,3 +87,30 @@ export async function updateLastCheck({
   const { rows } = await query(sql, values);
   return rows[0];
 }
+
+// FUNÇÃO PARA OBTER O RESUMO DO DASHBOARD
+export async function getDashboardSummary(userId) {
+  const sql = `
+    SELECT
+      COUNT(*) AS total,
+
+      COUNT(*) FILTER (
+        WHERE (CURRENT_DATE - COALESCE(last_check, sent_at)) <= 90
+      ) AS ok,
+
+      COUNT(*) FILTER (
+        WHERE (CURRENT_DATE - COALESCE(last_check, sent_at)) BETWEEN 91 AND 180
+      ) AS warning,
+
+      COUNT(*) FILTER (
+        WHERE (CURRENT_DATE - COALESCE(last_check, sent_at)) > 180
+      ) AS critical
+
+    FROM consignments
+    WHERE user_id = $1
+      AND active = true
+  `;
+
+  const { rows } = await query(sql, [userId]);
+  return rows[0];
+}

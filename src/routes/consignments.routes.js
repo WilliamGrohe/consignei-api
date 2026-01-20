@@ -1,16 +1,23 @@
+import { Router } from 'express';
 import {
   listConsignments,
   listOverdueConsignments,
-  updateConsignmentLastCheck
+  updateConsignmentLastCheck,
+  getConsignmentsDashboard 
 } from '../controllers/consignments.controller.js';
 
-export default async function consignmentsRoutes(app) {
-  // ROTA PARA LISTAR CONSIGNAÇÕES
-  app.get('/consignments', listConsignments);
+const router = Router();
 
-  // ROTA PARA CONSIGNAÇÕES ATRASADAS
-  app.get('/consignments/overdue', listOverdueConsignments);
+// ROTA PARA O DASHBOARD DE CONSIGNAÇÕES
+router.get('/dashboard', getConsignmentsDashboard);
 
-  // ROTA PARA ATUALIZAR A DATA DE CONFERÊNCIA DA CONSIGNAÇÃO
-  app.patch('/consignments/:id/last-check', updateConsignmentLastCheck);
-}
+// ROTA PARA LISTAR CONSIGNAÇÕES
+router.get('/', listConsignments);
+
+// ROTA PARA CONSIGNAÇÕES ATRASADAS
+router.get('/overdue', listOverdueConsignments);
+
+// ROTA PARA ATUALIZAR A DATA DE CONFERÊNCIA DA CONSIGNAÇÃO
+router.patch('/:id/last-check', updateConsignmentLastCheck);
+
+export default router;

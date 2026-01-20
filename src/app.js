@@ -10,11 +10,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// consignmentsRoutes(app);
+app.use('/consignments', consignmentsRoutes);
 app.get('/', (req, res) => {
   res.json({ message: 'API is running' });
 });
-
-consignmentsRoutes(app);
 
 // Health check
 app.get('/health', (req, res) => {
