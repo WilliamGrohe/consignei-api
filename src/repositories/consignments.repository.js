@@ -25,3 +25,27 @@ export async function findAllByUser(userId) {
   const { rows } = await query(sql, [userId]);
   return rows;
 }
+
+export async function findOverdueByUser(userId, days = 180) {
+  const sql = `
+    SELECT
+      c.id,
+      c.last_check,
+      c.sent_at,
+      c.quantity_sent,
+      b.title AS book_title,
+      p.name AS partner_name,
+      (CURRENT_DATE - c.last_check) AS days_without_check
+      FROM consignments c
+    JOIN books b ON b.id = c.book_id
+    JOIN partners p ON p.id = c.partner_id
+    WHERE c.user_id = $1
+      AND c.active = true
+      AND c.last_check IS NOT NULL
+      AND (CURRENT_DATE - c.last_check) >= $2
+    ORDER BY days_without_check DESC
+  `
+
+  const { rows } = await query(sql, [userId, days]);
+  return rows;
+}
