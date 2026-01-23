@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 
 import consignmentsRoutes from './routes/consignments.routes.js';
+import booksRoutes from './routes/books.routes.js';
 
 const app = express();
 
@@ -10,8 +11,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 // consignmentsRoutes(app);
 app.use('/consignments', consignmentsRoutes);
+
+app.use('/books', booksRoutes);
 app.get('/', (req, res) => {
   res.json({ message: 'API is running' });
 });
@@ -21,8 +25,5 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Futuramente:
-// app.use('/books', booksRoutes);
-// app.use('/consignments', consignmentsRoutes);
 
 export default app;
