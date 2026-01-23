@@ -1,9 +1,9 @@
-import { pool } from '../db/pool.js';
+import pool from '../db/pool.js';
 
-export async function createBook({ userId, title, isbn, price, author }) {
+export async function createBook({ userId, title, isbn, cover_price }) {
   const sql = `
-    INSERT INTO books (user_id, title, isbn, price, author)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO books (user_id, title, isbn, cover_price)
+    VALUES ($1, $2, $3, $4)
     RETURNING *
   `;
 
@@ -11,8 +11,7 @@ export async function createBook({ userId, title, isbn, price, author }) {
     userId,
     title,
     isbn,
-    price,
-    author,
+    cover_price
   ]);
 
   return rows[0];

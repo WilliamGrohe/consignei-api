@@ -8,9 +8,9 @@ export async function createBook(req, res) {
     // ⚠️ depois isso virá do auth (JWT)
     const userId = req.user?.id || '11111111-1111-1111-1111-111111111111';
 
-    const { title, isbn, price, author } = req.body;
+    const { title, isbn, cover_price } = req.body;
 
-    if (!title || !price) {
+    if (!title || !cover_price) {
       return res.status(400).json({
         error: 'Título e preço são obrigatórios',
       });
@@ -20,8 +20,7 @@ export async function createBook(req, res) {
       userId,
       title,
       isbn,
-      price,
-      author,
+      cover_price
     });
 
     return res.status(201).json(book);
