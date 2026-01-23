@@ -1,4 +1,5 @@
-import { query } from '../db/index.js';
+import { query } from "../db/index.js";
+import pool from '../db/pool.js';
 
 /**
  * Lista todas as consignações de um usuário
@@ -51,7 +52,7 @@ export async function findOverdueByUser(userId, days = 180) {
       AND c.last_check IS NOT NULL
       AND (CURRENT_DATE - c.last_check) >= $2
     ORDER BY days_without_check DESC
-  `
+  `;
 
   const { rows } = await query(sql, [userId, days]);
   return rows;
@@ -60,12 +61,7 @@ export async function findOverdueByUser(userId, days = 180) {
 /**
  * Atualiza a data de conferência da consignação
  */
-export async function updateLastCheck({
-  consignmentId,
-  userId,
-  date,
-  notes,
-}) {
+export async function updateLastCheck({ consignmentId, userId, date, notes }) {
   const sql = `
     UPDATE consignments
     SET
@@ -77,40 +73,32 @@ export async function updateLastCheck({
     RETURNING *
   `;
 
-  const values = [
-    date || new Date(),
-    notes || null,
-    consignmentId,
-    userId,
-  ];
+  const values = [date || new Date(), notes || null, consignmentId, userId];
 
   const { rows } = await query(sql, values);
   return rows[0];
 }
 
 // FUNÇÃO PARA OBTER O RESUMO DO DASHBOARD
-export async function getDashboardSummary(userId) {
+export async function getDashboardConsignments(userId) {
   const sql = `
     SELECT
-      COUNT(*) AS total,
-
-      COUNT(*) FILTER (
-        WHERE (CURRENT_DATE - COALESCE(last_check, sent_at)) <= 90
-      ) AS ok,
-
-      COUNT(*) FILTER (
-        WHERE (CURRENT_DATE - COALESCE(last_check, sent_at)) BETWEEN 91 AND 180
-      ) AS warning,
-
-      COUNT(*) FILTER (
-        WHERE (CURRENT_DATE - COALESCE(last_check, sent_at)) > 180
-      ) AS critical
-
-    FROM consignments
-    WHERE user_id = $1
-      AND active = true
+      c.id,
+      p.name AS partner_name,
+      c.sent_at,
+      c.last_check,
+      DATE_PART('day', NOW() - c.last_check) AS days_without_check,
+      CASE
+        WHEN c.last_check IS NULL THEN 'CRITICO'
+        WHEN DATE_PART('day', NOW() - c.last_check) <= 90 THEN 'OK'
+        WHEN DATE_PART('day', NOW() - c.last_check) <= 180 THEN 'ATENCAO'
+        ELSE 'CRITICO'
+      END AS status
+    FROM consignments c
+    JOIN partners p ON p.id = c.partner_id
+    ORDER BY days_without_check DESC NULLS LAST
   `;
 
-  const { rows } = await query(sql, [userId]);
-  return rows[0];
+  const { rows } = await pool.query(sql);
+  return rows;
 }

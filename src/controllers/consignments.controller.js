@@ -76,12 +76,8 @@ export async function updateConsignmentLastCheck(req, res) {
 // CONTROLLER PARA OBTER O RESUMO DO DASHBOARD
 export async function getConsignmentsDashboard(req, res) {
   try {
-    const userId = '11111111-1111-1111-1111-111111111111';
-
-    const summary =
-      await ConsignmentsRepo.getDashboardSummary(userId);
-
-    res.json(summary);
+    const consignments = await ConsignmentsRepo.getDashboardConsignments();
+    res.json(consignments);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao carregar dashboard' });
