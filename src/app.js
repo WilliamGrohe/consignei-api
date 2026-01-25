@@ -4,6 +4,7 @@ import cors from 'cors';
 
 import consignmentsRoutes from './routes/consignments.routes.js';
 import booksRoutes from './routes/books.routes.js';
+import partnerRoutes from './routes/partners.routes.js';
 
 const app = express();
 
@@ -14,8 +15,9 @@ app.use(express.json());
 
 // consignmentsRoutes(app);
 app.use('/consignments', consignmentsRoutes);
-
 app.use('/books', booksRoutes);
+app.use('/partners', partnerRoutes);
+
 app.get('/', (req, res) => {
   res.json({ message: 'API is running' });
 });

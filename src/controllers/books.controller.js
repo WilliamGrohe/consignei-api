@@ -31,3 +31,14 @@ export async function createBook(req, res) {
     });
   }
 }
+
+export async function getBooks(req, res) {
+  try {
+    const books = await BooksRepo.getBooks();
+    res.json(books);
+    console.log(books);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao carregar livros' });
+  }
+}

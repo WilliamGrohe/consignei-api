@@ -16,3 +16,11 @@ export async function createBook({ userId, title, isbn, cover_price }) {
 
   return rows[0];
 }
+
+export async function getBooks() {
+  const sql = `
+    SELECT * FROM books
+  `;
+  const { rows } = await pool.query(sql);
+  return rows;
+}
