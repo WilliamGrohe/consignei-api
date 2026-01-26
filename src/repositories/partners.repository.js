@@ -13,20 +13,24 @@ export async function createPartner(partner) {
     INSERT INTO partners (
       user_id,
       name,
-      contact_name,
       cnpj,
+      contact_name,
+      phone,
+      email,
       notes
     )
-    VALUES ($1, $2, $3, $4, $5)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *
   `;
 
   const { rows } = await pool.query(sql, [
     partner.userId,
     partner.name,
-    partner.contact_name,
     partner.cnpj,
-    partner.notes
+    partner.contact_name,
+    partner.phone,
+    partner.email,
+    partner.notes,
   ]);
 
   return rows[0];
