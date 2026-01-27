@@ -3,12 +3,25 @@ export async function getPartners(req, res) {
   try {
     const partners = await PartnersRepo.getPartners();
     res.json(partners);
-    console.log(partners);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao carregar parceiros' });
   }
 }
+
+export async function getPartner(req, res) {
+  try {
+    const partner = await PartnersRepo.getPartner(req.params.cnpj);
+    if (!partner) {
+      return res.status(404).json({ error: 'Parceiro não encontrado' });
+    }
+    res.json(partner);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao carregar informações da livraria parceira' });
+  }
+}
+
 
 export async function createPartner(req, res) {
   try {

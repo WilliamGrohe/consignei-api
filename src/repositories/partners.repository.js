@@ -5,7 +5,15 @@ export async function getPartners() {
     SELECT * FROM partners
   `;
   const { rows } = await pool.query(sql);
-  return rows;
+  return rows[0];
+}
+
+export async function getPartner(cnpj) {
+  const sql = `
+    SELECT * FROM partners WHERE cnpj = $1
+  `;
+  const { rows } = await pool.query(sql, [cnpj]);
+  return rows[0];
 }
 
 export async function createPartner(partner) {
